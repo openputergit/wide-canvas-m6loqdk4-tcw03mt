@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodTracker - Your Emotional Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #FF9A9E 0%, #FAD0C4 99%, #FAD0C4 100%);
+            min-height: 100vh;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .tab-active {
+            border-bottom: 3px solid #FF9A9E;
+            color: #FF9A9E;
+        }
+        .diary-entry {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 0;
+        }
+        .mood-game-card {
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .mood-game-card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .mood-game-card:hover .mood-game-card-inner {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="loginSection" class="min-h-screen flex items-center justify-center p-4">
+        <div class="glass-effect p-8 rounded-xl shadow-xl max-w-md w-full">
+            <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">MoodTracker</h2>
+            <div class="mb-6 text-center">
+                <img src="https://images.unsplash.com/photo-1517960413843-0aee8e2b3285?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=200" alt="Logo" class="w-32 h-32 mx-auto rounded-full shadow-lg">
+            </div>
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label class="block text-gray-700 mb-2">Email</label>
+                    <input type="email" class="w-full p-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-pink-400" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2">Password</label>
+                    <input type="password" class="w-full p-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-pink-400" required>
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-pink-400 to-red-400 text-white py-3 rounded-lg hover:opacity-90 transition">
+                    Login
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App Section -->
+    <div id="appSection" class="hidden min-h-screen">
+        <!-- Navigation -->
+        <nav class="glass-effect p-4 mb-6">
+            <div class="max-w-6xl mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-gray-800">MoodTracker</h1>
+                <div class="space-x-6">
+                    <button class="tab-btn tab-active px-4 py-2" data-tab="detection">Mood Detection</button>
+                    <button class="tab-btn px-4 py-2" data-tab="diary">Diary</button>
+                    <button class="tab-btn px-4 py-2" data-tab="analysis">Analysis</button>
+                    <button class="tab-btn px-4 py-2" data-tab="games">Games</button>
+                    <button class="tab-btn px-4 py-2" data-tab="music">Music</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Content Sections -->
+        <div class="max-w-6xl mx-auto p-4">
+            <!-- Mood Detection Tab -->
+            <div id="detectionTab" class="tab-content">
+                <div class="glass-effect p-8 rounded-xl shadow-xl">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <video id="video" class="w-full h-64 object-cover rounded-lg" autoplay></video>
+                            <canvas id="canvas" class="hidden absolute"></canvas>
+                            <button id="startButton" class="mt-4 bg-pink-500 text-white px-6 py-2 rounded-lg hover:bg-pink-600 transition">
+                                Start Detection
+                            </button>
+                            <p id="moodResult" class="mt-4 text-xl font-semibold text-gray-800"></p>
+                        </div>
+                        <div id="questionnaireSection" class="space-y-4">
+                            <h3 class="text-xl font-semibold text-gray-800">Daily Mood Check</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block mb-2">How are you feeling right now?</label>
+                                    <div class="grid grid-cols-5 gap-2">
+                                        <button class="mood-btn p-2 rounded hover:bg-pink-100">😊</button>
+                                        <button class="mood-btn p-2 rounded hover:bg-pink-100">😢</button>
+                                        <button class="mood-btn p-2 rounded hover:bg-pink-100">😠</button>
+                                        <button class="mood-btn p-2 rounded hover:bg-pink-100">😴</button>
+                                        <button class="mood-btn p-2 rounded hover:bg-pink-100">🤔</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block mb-2">Energy Level (1-10)</label>
+                                    <input type="range" min="1" max="10" class="w-full">
+                                </div>
+                                <div>
+                                    <label class="block mb-2">What's on your mind?</label>
+                                    <textarea class="w-full p-3 rounded-lg border" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diary Tab -->
+            <div id="diaryTab" class="tab-content hidden">
+                <div class="glass-effect p-8 rounded-xl shadow-xl">
+                    <div class="flex justify-between mb-6">
+                        <h3 class="text-2xl font-bold">My Mood Journal</h3>
+                        <button class="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600">New Entry</button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="diary-entry">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-semibold">Today</span>
+                                <span>😊 Happy</span>
+                            </div>
+                            <p class="text-gray-600">Had a great day at work! Project completed successfully.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Tab -->
+            <div id="analysisTab" class="tab-content hidden">
+                <div class="glass-effect p-8 rounded-xl shadow-xl">
+                    <h3 class="text-2xl font-bold mb-6">Mood Analysis</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <h4 class="font-semibold mb-2">Weekly Overview</h4>
+                            <div class="h-40 bg-gray-100 rounded flex items-center justify-center">
+                                [Mood Chart]
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <h4 class="font-semibold mb-2">Common Triggers</h4>
+                            <ul class="list-disc list-inside">
+                                <li>Work Stress</li>
+                                <li>Exercise</li>
+                                <li>Social Activities</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <h4 class="font-semibold mb-2">Recommendations</h4>
+                            <ul class="list-disc list-inside">
+                                <li>Try meditation</li>
+                                <li>Take a walk</li>
+                                <li>Listen to calm music</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Games Tab -->
+            <div id="gamesTab" class="tab-content hidden">
+                <div class="glass-effect p-8 rounded-xl shadow-xl">
+                    <h3 class="text-2xl font-bold mb-6">Mood Games</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="mood-game-card">
+                            <div class="mood-game-card-inner bg-white p-6 rounded-lg shadow text-center">
+                                <h4 class="font-semibold">Emotion Match</h4>
+                                <p class="text-sm text-gray-600">Match emotions with scenarios</p>
+                                <button class="mt-4 bg-pink-500 text-white px-4 py-2 rounded">Play</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Music Tab -->
+            <div id="musicTab" class="tab-content hidden">
+                <div class="glass-effect p-8 rounded-xl shadow-xl">
+                    <h3 class="text-2xl font-bold mb-6">Mood Music</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <h4 class="font-semibold mb-4">Happy Vibes Playlist</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                                    <span>Happy - Pharrell Williams</span>
+                                    <button class="text-pink-500"><i class="bi bi-play-circle"></i></button>
+                                </li>
+                                <li class="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                                    <span>Good Vibrations - Beach Boys</span>
+                                    <button class="text-pink-500"><i class="bi bi-play-circle"></i></button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <h4 class="font-semibold mb-4">Calm & Relaxing</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                                    <span>Weightless - Marconi Union</span>
+                                    <button class="text-pink-500"><i class="bi bi-play-circle"></i></button>
+                                </li>
+                                <li class="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
+                                    <span>River Flows In You - Yiruma</span>
+                                    <button class="text-pink-500"><i class="bi bi-play-circle"></i></button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Login handling
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('appSection').classList.remove('hidden');
+        });
+
+        // Tab switching
+        const tabs = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('tab-active'));
+                tab.classList.add('tab-active');
+                
+                const tabId = tab.getAttribute('data-tab') + 'Tab';
+                tabContents.forEach(content => {
+                    content.classList.add('hidden');
+                    if (content.id === tabId) {
+                        content.classList.remove('hidden');
+                    }
+                });
+            });
+        });
+
+        // Video handling
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const startButton = document.getElementById('startButton');
+        const moodResult = document.getElementById('moodResult');
+
+        startButton.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                startButton.textContent = 'Detecting...';
+                
+                setTimeout(() => {
+                    const moods = ['Happy 😊', 'Relaxed 😌', 'Energetic ⚡', 'Calm 😊'];
+                    moodResult.textContent = `Detected Mood: ${moods[Math.floor(Math.random() * moods.length)]}`;
+                    startButton.textContent = 'Start Detection';
+                }, 2000);
+            } catch (err) {
+                alert('Error accessing camera: ' + err.message);
+            }
+        });
+
+        // Mood buttons
+        document.querySelectorAll('.mood-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('bg-pink-100'));
+                btn.classList.add('bg-pink-100');
+            });
+        });
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
